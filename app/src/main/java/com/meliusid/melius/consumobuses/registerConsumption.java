@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -45,6 +46,19 @@ public class registerConsumption extends AppCompatActivity {
         sp = (Spinner) findViewById(R.id.spinner);
         new GetBuses().execute();
     }
+
+    /**
+     *
+     */
+
+    public void sendInfo(){
+
+        EditText kilometers = (EditText) findViewById(R.id.kilometers);
+        EditText gallons = (EditText) findViewById(R.id.gallons);
+        EditText date = (EditText) findViewById(R.id.date);
+    }
+
+
 
     /**
      * Async task class to get json by making HTTP call
