@@ -28,7 +28,6 @@ public class registerConsumption extends AppCompatActivity {
     private String TAG = registerConsumption.class.getSimpleName();
 
     private ProgressDialog pDialog;
-    //private ListView lv;
     private Spinner sp;
 
     // URL to get contacts JSON
@@ -43,9 +42,7 @@ public class registerConsumption extends AppCompatActivity {
 
         busesList = new ArrayList<>();
 
-        //lv = (ListView) findViewById(R.id.list);
         sp = (Spinner) findViewById(R.id.spinner);
-
         new GetBuses().execute();
     }
 
@@ -132,18 +129,7 @@ public class registerConsumption extends AppCompatActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
-
-            String[] letra = Bus.buses_codes(busesList);
-
-            sp.setAdapter(new ArrayAdapter<String>(registerConsumption.this, android.R.layout.simple_spinner_item, letra));
-
-//            ListAdapter adapter = new SimpleAdapter(
-//                    registerConsumption.this, contactList,
-//                    R.layout.list_item, new String[]{"name", "email",
-//                    "mobile"}, new int[]{R.id.name,
-//                    R.id.email, R.id.mobile});
-//
-//            lv.setAdapter(adapter);
+            sp.setAdapter(new ArrayAdapter<String>(registerConsumption.this, android.R.layout.simple_spinner_item, Bus.buses_codes(busesList)));
         }
 
     }
