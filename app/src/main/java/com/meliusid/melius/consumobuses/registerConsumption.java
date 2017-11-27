@@ -3,9 +3,11 @@ package com.meliusid.melius.consumobuses;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import logic.Bus;
 import logic.HttpHandler;
 
 public class registerConsumption extends AppCompatActivity {
@@ -25,30 +28,31 @@ public class registerConsumption extends AppCompatActivity {
     private String TAG = registerConsumption.class.getSimpleName();
 
     private ProgressDialog pDialog;
-    private ListView lv;
+    //private ListView lv;
+    private Spinner sp;
 
     // URL to get contacts JSON
-    private static String url = "http://192.168.0.11:8080/api/v1/buses";
+    private static String url = "http://192.168.0.8:8080/api/v1/buses";
 
-    ArrayList<HashMap<String, String>> contactList;
-
+    ArrayList<Bus> busesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_consumption);
 
-        contactList = new ArrayList<>();
+        busesList = new ArrayList<>();
 
         //lv = (ListView) findViewById(R.id.list);
+        sp = (Spinner) findViewById(R.id.spinner);
 
-        new GetContacts().execute();
+        new GetBuses().execute();
     }
 
     /**
      * Async task class to get json by making HTTP call
      */
-    private class GetContacts extends AsyncTask<Void, Void, Void> {
+    private class GetBuses extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -75,35 +79,19 @@ public class registerConsumption extends AppCompatActivity {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
                     // Getting JSON Array node
-                    JSONArray contacts = jsonObj.getJSONArray("buses");
+                    JSONArray buses = jsonObj.getJSONArray("buses");
 
                     // looping through All Contacts
-                    for (int i = 0; i < contacts.length(); i++) {
-                        JSONObject c = contacts.getJSONObject(i);
+                    for (int i = 0; i < buses.length(); i++) {
 
-                        String id = c.getString("id");
-                        String name = c.getString("name");
-                        String email = c.getString("email");
-                        String address = c.getString("address");
-                        String gender = c.getString("gender");
+                        JSONObject c = buses.getJSONObject(i);
 
-                        // Phone node is JSON Object
-                        JSONObject phone = c.getJSONObject("phone");
-                        String mobile = phone.getString("mobile");
-                        String home = phone.getString("home");
-                        String office = phone.getString("office");
+                        String[] allCodes = c.getString("codes").split(",");
 
-                        // tmp hash map for single contact
-                        HashMap<String, String> contact = new HashMap<>();
-
-                        // adding each child node to HashMap key => value
-                        contact.put("id", id);
-                        contact.put("name", name);
-                        contact.put("email", email);
-                        contact.put("mobile", mobile);
-
-                        // adding contact to contact list
-                        contactList.add(contact);
+                        for (int j = 0; j < allCodes.length; j++) {
+                            Bus bus = new Bus(allCodes[j].replace('"',' '));
+                            busesList.add(bus);
+                        }
                     }
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
@@ -139,11 +127,16 @@ public class registerConsumption extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // Dismiss the progress dialog
-//            if (pDialog.isShowing())
-//                pDialog.dismiss();
-//            /**
-//             * Updating parsed JSON data into ListView
-//             * */
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            /**
+             * Updating parsed JSON data into ListView
+             * */
+
+            String[] letra = Bus.buses_codes(busesList);
+
+            sp.setAdapter(new ArrayAdapter<String>(registerConsumption.this, android.R.layout.simple_spinner_item, letra));
+
 //            ListAdapter adapter = new SimpleAdapter(
 //                    registerConsumption.this, contactList,
 //                    R.layout.list_item, new String[]{"name", "email",
